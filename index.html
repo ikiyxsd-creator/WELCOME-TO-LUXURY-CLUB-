@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUXURY CLUB - Access Portal</title>
+    <style>
+        /* --- MOBILE FIRST RESET --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', 'Cinzel', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #060606;
+            background-image: radial-gradient(circle at center, #15110d 0%, #020202 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        /* --- BACKGROUND AMBIENT --- */
+        .ambient-glow {
+            position: absolute;
+            width: 130vw;
+            height: 130vw;
+            max-width: 450px;
+            max-height: 450px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, rgba(0,0,0,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- APP BOX --- */
+        .app-container {
+            position: relative;
+            z-index: 2;
+            width: 88%;
+            max-width: 370px;
+            min-height: 380px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- CARD SCENE --- */
+        .card {
+            width: 100%;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- LUXURY TYPOGRAPHY --- */
+        .gold-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff 10%, #f3e5ab 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .sub-title {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: #8c8c8c;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .sub-title span {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .description {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #cccccc;
+            font-weight: 300;
+            margin-bottom: 30px;
+            padding: 0 5px;
+        }
+
+        /* --- STEP TRACKER DOTS --- */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #d4af37;
+            box-shadow: 0 0 8px #d4af37;
+            width: 18px;
+            border-radius: 4px;
+        }
+
+        /* --- LUXURY BUTTONS --- */
+        .btn-luxury {
+            width: 100%;
+            background: rgba(15, 15, 15, 0.8);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            padding: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-luxury:active {
+            background: #d4af37;
+            color: #000000;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transform: scale(0.98);
+        }
+
+        /* --- STEP 3: LOADING SYSTEM --- */
+        .loading-status {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: #d4af37;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            min-height: 20px;
+        }
+
+        .track-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .fill-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #aa7c11, #d4af37, #fff);
+            box-shadow: 0 0 8px #d4af37;
+        }
+
+        .percentage {
+            font-size: 1rem;
+            font-weight: 300;
+            color: #8c8c8c;
+        }
+
+        /* --- STEP 4: ACCESS CARD FRAME --- */
+        .clean-frame {
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 30px 15px;
+            background: rgba(12, 10, 8, 0.6);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .notice-box {
+            background: rgba(212, 175, 55, 0.06);
+            border: 1px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            color: #e5c158;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b89324 100%);
+            color: #000000;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .play-btn:active {
+            background: #ffffff;
+            box-shadow: 0 5px 25px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <div class="app-container">
+
+        <!-- STEP 1: SAMBUTAN AWAL -->
+        <div class="card active" id="step-1">
+            <div class="step-indicator">
+                <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <h1 class="gold-title">Luxury Club</h1>
+            <div class="sub-title">Created by <span>IKIY</span></div>
+            <p class="description">
+                Selamat datang di gerbang verifikasi. Sebagai game yang baru rilis, ini adalah langkah awal Anda untuk mendapatkan otentikasi masuk ke map utama.
+            </p>
+            <button class="btn-luxury" onclick="nextStep('step-1', 'step-2')">Lanjutkan</button>
+        </div>
+
+        <!-- STEP 2: PETUNJUK KLAIM HADIAH / OWNER -->
+        <div class="card" id="step-2">
+            <div class="step-indicator">
+                <div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <h1 class="gold-title" style="font-size: 1.5rem;">Informasi Penting</h1>
+            <div class="sub-title">Peluang Hadiah & Titel</div>
+            <p class="description" style="font-size: 0.85rem;">
+                Pastikan Anda nanti memilih dan masuk ke <strong>Server Utama (Server yang ada Owner/IKIY)</strong> melalui daftar server di profil map, guna mendapatkan kesempatan klaim spesial <strong>Titel Eksklusif</strong> atau <strong>Giveaway</strong> menarik!
+            </p>
+            <button class="btn-luxury" onclick="nextStep('step-2', 'step-3', startLoading)">Saya Mengerti</button>
+        </div>
+
+        <!-- STEP 3: LOADING PROCESS (30 DETIK) -->
+        <div class="card" id="step-3">
+            <div class="step-indicator">
+                <div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+            </div>
+            <div class="loading-status" id="load-text">Mempersiapkan Protokol...</div>
+            <div class="track-bar">
+                <div class="fill-bar" id="progress-fill"></div>
+            </div>
+            <div class="percentage" id="progress-num">0%</div>
+        </div>
+
+        <!-- STEP 4: FRAME FINAL & TOGGLE PLAY -->
+        <div class="card" id="step-4">
+            <div class="step-indicator">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+            </div>
+            <div class="clean-frame">
+                <h1 class="gold-title" style="font-size: 1.5rem; margin-bottom: 2px;">Akses Siap</h1>
+                <div class="sub-title" style="margin-bottom: 15px;">Welcome to <span>Luxury Club</span></div>
+                
+                <div class="notice-box">
+                    <strong>PENGINGAT AKHIR:</strong><br>
+                    Saat halaman Roblox terbuka, scroll ke tab <em>Servers</em>, cari server aktif yang ada Akun Owner, lalu klik Join untuk mengamankan peluang event!
+                </div>
+
+                <button class="btn-luxury play-btn" onclick="launchGame()">Play Game</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Navigasi langkah demi langkah dengan efek transisi smooth
+        function nextStep(currentId, nextId, callback = null) {
+            const current = document.getElementById(currentId);
+            const next = document.getElementById(nextId);
+            
+            current.style.opacity = '0';
+            current.style.transform = 'translateY(-15px)';
+            
+            setTimeout(() => {
+                current.classList.remove('active');
+                next.classList.add('active');
+                
+                setTimeout(() => {
+                    next.style.opacity = '1';
+                    next.style.transform = 'translateY(0)';
+                    if (callback) callback();
+                }, 50);
+            }, 500);
+        }
+
+        // Jalankan loading presisi selama 30 detik pada Step 3
+        function startLoading() {
+            const duration = 30000; // 30 Detik
+            const startTime = Date.now();
+            
+            const fillBar = document.getElementById('progress-fill');
+            const progressNum = document.getElementById('progress-num');
+            const loadText = document.getElementById('load-text');
+
+            const statusFlow = [
+                { limit: 0, text: "Menghubungkan jaringan portal..." },
+                { limit: 25, text: "Memvalidasi database pemain baru..." },
+                { limit: 60, text: "Sinkronisasi hak akses VVIP IKIY..." },
+                { limit: 85, text: "Otentikasi selesai, menyusun gerbang..." }
+            ];
+
+            function run() {
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const pct = Math.min((elapsed / duration) * 100, 100);
+
+                fillBar.style.width = `${pct}%`;
+                progressNum.innerText = `${Math.floor(pct)}%`;
+
+                statusFlow.forEach(status => {
+                    if (pct >= status.limit) {
+                        loadText.innerText = status.text;
+                    }
+                });
+
+                if (pct < 100) {
+                    requestAnimationFrame(run);
+                } else {
+                    setTimeout(() => {
+                        nextStep('step-3', 'step-4');
+                    }, 800);
+                }
+            }
+            requestAnimationFrame(run);
+        }
+
+        // Direct player ke game Roblox kamu
+        function launchGame() {
+            window.location.href = "https://www.roblox.com/share?code=b55f8e01e0d7e94189780cde546b0349&type=ExperienceDetails&stamp=1781002864559";
+        }
+    </script>
+</body>
+</html>
